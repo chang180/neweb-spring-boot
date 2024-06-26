@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Products</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .product-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin-top: 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="product-container">
+        <h2>Products</h2>
+        <div id="products-list"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 从 URL 中获取 token 并存储在 localStorage 中
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                localStorage.setItem('token', token);
+            }
+
+            // 获取存储在 localStorage 中的 token
+            const storedToken = localStorage.getItem('token');
+            if (!storedToken) {
+                alert('No token found, please login first.');
+                window.location.href = '/login';
+                return;
+            }
+
+            // 使用 token 发起 AJAX 请求
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/api/products", true);
+            xhr.setRequestHeader("Authorization", "Bearer " + storedToken);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var products = JSON.parse(xhr.responseText);
+                    var productsList = document.getElementById('products-list');
+                    products.forEach(function(product) {
+                        var productElement = document.createElement('div');
+                        productElement.innerHTML = '<h3>' + product.name + '</h3><p>' + product.description + '</p>';
+                        productsList.appendChild(productElement);
+                    });
+                } else if (xhr.readyState === 4) {
+                    alert('Failed to load products: ' + xhr.responseText);
+                }
+            };
+            xhr.send();
+        });
+    </script>
+</body>
+</html>

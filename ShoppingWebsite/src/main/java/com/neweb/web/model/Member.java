@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.Date;
+
 @Entity
 public class Member {
 
@@ -25,6 +27,10 @@ public class Member {
 
     @NotNull
     private String password;
+
+    private String userToken;
+
+    private Date tokenExpiry;
 
     public Member() {
         // Default constructor
@@ -67,5 +73,21 @@ public class Member {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
+    }
+
+    public Date getTokenExpiry() {
+        return tokenExpiry;
+    }
+
+    public void setTokenExpiry(Date tokenExpiry) {
+        this.tokenExpiry = tokenExpiry;
     }
 }
