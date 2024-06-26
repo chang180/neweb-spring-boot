@@ -26,6 +26,16 @@ public class Member {
     @NotNull
     private String password;
 
+    public Member() {
+        // Default constructor
+    }
+
+    public Member(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;

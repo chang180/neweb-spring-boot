@@ -1,20 +1,17 @@
 package com.neweb.web.controller;
 
-import com.neweb.web.payload.request.LoginRequest;
-import com.neweb.web.payload.response.JwtResponse;
-import com.neweb.web.service.UserDetailsImpl;
+import com.neweb.web.model.Member;
+import com.neweb.web.payload.request.RegisterRequest;
+import com.neweb.web.repository.MemberRepository;
 import com.neweb.web.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,22 +23,27 @@ public class MemberController {
     @Autowired
     JwtUtils jwtUtils;
 
-    @PostMapping("/login")
-    public ResponseEntity<JwtResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    @Autowired
+    MemberRepository memberRepository;
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@ModelAttribute RegisterRequest signUpRequest) {
+        if (memberRepository.existsByUsername(signUpRequest.getUsername())) {
+            return ResponseEntity.badRequest().body("Error: Username is already taken!");
+        }
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+        if (memberRepository.existsByEmail(signUpRequest.getEmail())) {
+            return ResponseEntity.badRequest().body("Error: Email is already in use!");
+        }
 
-        JwtResponse jwtResponse = new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles);
+        // Create new user's account
+        Member user = new Member(signUpRequest.getUsername(), signUpRequest.getEmail(), passwordEncoder.encode(signUpRequest.getPassword()));
 
-        return ResponseEntity.ok(jwtResponse);
+        memberRepository.save(user);
+
+        return ResponseEntity.ok("User registered successfully!");
     }
 }
