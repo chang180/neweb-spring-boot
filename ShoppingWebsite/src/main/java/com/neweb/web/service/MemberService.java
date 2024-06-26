@@ -3,8 +3,8 @@ package com.neweb.web.service;
 import com.neweb.web.model.Member;
 import com.neweb.web.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
 
 @Service
 public class MemberService {
@@ -12,11 +12,21 @@ public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
 
-    public Member saveMember(Member member) {
-        return memberRepository.save(member);
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public void registerMember(Member member) {
+        member.setPassword(passwordEncoder.encode(member.getPassword()));
+        memberRepository.save(member);
     }
 
-    public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
+    public Member findByUsername(String username) {
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+    }
+
+    public boolean authenticateMember(String username, String password) {
+        Member member = findByUsername(username);
+        return passwordEncoder.matches(password, member.getPassword());
     }
 }
