@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import com.neweb.web.service.UserDetailsImpl;
@@ -18,13 +19,21 @@ public class JwtUtils {
 
     private Key key;
 
-    private int jwtExpirationMs = 86400000; // 设置过期时间，这里设置为1天
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.expirationMs}")
+    private int jwtExpirationMs;
 
     @PostConstruct
     public void init() {
         try {
             logger.info("Initializing JwtUtils...");
-            this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+            if (jwtSecret.length() < 64) {
+                throw new IllegalArgumentException("The JWT secret key must be at least 64 bytes.");
+            }
+            byte[] keyBytes = jwtSecret.getBytes();
+            this.key = Keys.hmacShaKeyFor(keyBytes);
             logger.info("JwtUtils initialized successfully with secret.");
         } catch (Exception e) {
             logger.error("Error initializing JwtUtils", e);
@@ -44,15 +53,25 @@ public class JwtUtils {
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (JwtException e) {
+            logger.error("Failed to parse JWT token: {}", e.getMessage());
+            return null;
+        }
     }
 
     public boolean validateJwtToken(String authToken) {
+        if (authToken == null || authToken.isEmpty() || !authToken.contains(".")) {
+            logger.error("JWT token is empty, null, or does not contain 2 period characters");
+            return false;
+        }
+        
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
             return true;

@@ -1,32 +1,61 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Welcome</title>
+    <title>Home</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
-            text-align: center;
-            padding: 50px;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        .container {
+        .home-container {
             background-color: #fff;
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: inline-block;
+            width: 300px;
+            text-align: center;
         }
 
-        h1 {
-            font-size: 48px;
-            color: #333;
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome!</h1>
+    <div class="home-container">
+        <h2>Welcome to Our Website</h2>
+        <p>Please click the button below to login.</p>
+        
+        <!-- 使用 Thymeleaf 控制按鈕的顯示 -->
+        <div th:if="${session.token == null}">
+            <button th:attr="onclick='window.location.href=\'/login\''">Login</button>
+        </div>
+        
+        <div th:if="${session.token != null}">
+            <button th:attr="onclick='window.location.href=\'/products\''">Go to Products</button>
+            <button th:attr="onclick='window.location.href=\'/auth/members\''">View Members</button>
+            <div th:if="${session.userId == 1}">
+                <button th:attr="onclick='window.location.href=\'/adminProducts\''">Manage Products</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>

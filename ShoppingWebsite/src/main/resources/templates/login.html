@@ -53,7 +53,33 @@
             color: red;
             margin-top: 10px;
         }
+
+        .alert {
+            color: green;
+            margin-top: 10px;
+        }
     </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var token = /*[[${session.token}]]*/ 'null';
+        if (token !== 'null') {
+            fetch('/auth/validateToken', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    alert('You are already logged in.');
+                    window.location.href = '/products';
+                }
+            });
+        }
+        /*]]>*/
+    </script>
 </head>
 <body>
     <div class="login-container">
@@ -63,18 +89,12 @@
             <input type="password" th:field="*{password}" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
-        <div th:if="${param.error}" class="error">
-            Invalid username or password.
+        <div th:if="${error}" class="error">
+            <p th:text="${error}"></p>
+        </div>
+        <div th:if="${session.token != null}" class="alert" th:unless="${session.validToken}">
+            Invalid token, please login again.
         </div>
     </div>
-
-    <script>
-        // 检查URL中是否有token参数，并存储到localStorage
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        if (token) {
-            localStorage.setItem('token', token);
-        }
-    </script>
 </body>
 </html>

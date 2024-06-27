@@ -74,5 +74,13 @@
             <p th:text="${success}"></p>
         </div>
     </div>
+    <script>
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        if (token) {
+            localStorage.setItem('token', token);
+        }
+    </script>
 </body>
 </html>

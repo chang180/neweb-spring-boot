@@ -53,7 +53,7 @@
 <body>
     <div class="register-container">
         <h2>Register</h2>
-        <form th:action="@{/api/auth/register}" method="post" th:object="${registerRequest}">
+        <form th:action="@{/auth/register}" method="post" th:object="${registerRequest}">
             <label for="username">Username:</label>
             <input type="text" id="username" th:field="*{username}" required>
             <br>
@@ -66,5 +66,6 @@
             <button type="submit">Register</button>
         </form>
     </div>
+    
 </body>
 </html>

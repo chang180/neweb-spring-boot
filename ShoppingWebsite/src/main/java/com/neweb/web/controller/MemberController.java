@@ -6,7 +6,11 @@ import com.neweb.web.payload.request.RegisterRequest;
 import com.neweb.web.repository.MemberRepository;
 import com.neweb.web.service.UserDetailsImpl;
 import com.neweb.web.util.JwtUtils;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -64,8 +72,13 @@ public class MemberController {
                 memberRepository.save(member);
             }
 
-            // 暂时定向至 profile
-            return "redirect:/auth/profile?token=" + jwt;
+            // 將 JWT 存入 session
+            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            attr.getRequest().getSession(true).setAttribute("token", jwt);
+            attr.getRequest().getSession(true).setAttribute("userId", userDetails.getId()); // 假設 UserDetailsImpl 有 getId 方法
+
+            // 暫時定向至 products
+            return "redirect:/products";
         } catch (Exception e) {
             model.addAttribute("error", "Invalid username or password.");
             return "login";
@@ -74,8 +87,9 @@ public class MemberController {
 
     @PostMapping("/logout")
     @Transactional
-    public String logoutUser(@ModelAttribute String username) {
-        memberRepository.clearUserToken(username);
+    public String logoutUser(HttpSession session) {
+        session.invalidate(); // 清除所有 session 数据
+        SecurityContextHolder.clearContext(); // 清除 Spring Security 上下文中的身份验证信息
         return "redirect:/login?logout";
     }
 
@@ -99,8 +113,13 @@ public class MemberController {
     }
 
     @GetMapping("/profile")
-    public String showProfile(@RequestParam("token") String token, Model model) {
-        // 解析token获取用户名
+    public String showProfile(Model model) {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        String token = (String) attr.getRequest().getSession().getAttribute("token");
+        if (token == null || !jwtUtils.validateJwtToken(token)) {
+            return "redirect:/login";
+        }
+
         String username = jwtUtils.getUserNameFromJwtToken(token);
         Optional<Member> memberOptional = memberRepository.findByUsername(username);
         if (memberOptional.isPresent()) {
@@ -146,5 +165,12 @@ public class MemberController {
             model.addAttribute("error", "Member not found");
         }
         return "memberProfile"; // 返回视图名
+    }
+
+    @PostMapping("/validateToken")
+    @ResponseBody
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        boolean isValid = jwtUtils.validateJwtToken(token.replace("Bearer ", ""));
+        return ResponseEntity.ok().body(Collections.singletonMap("valid", isValid));
     }
 }

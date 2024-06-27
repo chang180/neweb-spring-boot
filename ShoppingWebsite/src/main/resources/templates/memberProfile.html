@@ -1,59 +1,81 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>Member Profile</title>
-<style>
-body {
-	font-family: Arial, sans-serif;
-	background-color: #f2f2f2;
-	margin: 0;
-	padding: 20px;
-}
+    <title>Member Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
 
-.profile-container {
-	background-color: #fff;
-	padding: 20px;
-	border-radius: 5px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	margin: 0 auto;
-	max-width: 400px;
-}
+        .profile-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            max-width: 400px;
+        }
 
-h2 {
-	margin-bottom: 20px;
-	color: #333;
-}
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
 
-.info {
-	margin-bottom: 10px;
-}
+        .info {
+            margin-bottom: 10px;
+        }
 
-.info span {
-	display: block;
-	font-weight: bold;
-}
+        .info span {
+            display: block;
+            font-weight: bold;
+        }
 
-.info p {
-	margin: 0;
-	color: #666;
-}
-</style>
+        .info p {
+            margin: 0;
+            color: #666;
+        }
+
+        .button-link {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .button-link:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var token = /*[[${session.token}]]*/ 'null';
+        if (token === 'null') {
+            window.location.href = '/';
+        }
+        /*]]>*/
+    </script>
 </head>
 <body>
-	<div class="profile-container">
-		<h2>Member Profile</h2>
-		<div class="info">
-			<span>Username:</span>
-			<p th:text="${member.username}"></p>
-		</div>
-		<div class="info">
-			<span>Email:</span>
-			<p th:text="${member.email}"></p>
-		</div>
-		<!-- 添加返回到 members 的按鈕 -->
-		<div>
-			<a th:href="@{/auth/members}" class="button-link">Back to Members</a>
-		</div>
-	</div>
+    <div class="profile-container">
+        <h2>Member Profile</h2>
+        <div class="info">
+            <span>Username:</span>
+            <p th:text="${member.username}"></p>
+        </div>
+        <div class="info">
+            <span>Email:</span>
+            <p th:text="${member.email}"></p>
+        </div>
+        <!-- 添加返回到 members 的按鈕 -->
+        <div>
+            <a th:href="@{/auth/members}" class="button-link">Back to Members</a>
+        </div>
+    </div>
 </body>
 </html>
