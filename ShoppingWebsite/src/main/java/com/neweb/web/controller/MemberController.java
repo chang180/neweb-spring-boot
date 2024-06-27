@@ -15,11 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -65,8 +64,8 @@ public class MemberController {
                 memberRepository.save(member);
             }
 
-            // 重定向到/products页面，并将token作为参数传递
-            return "redirect:/products?token=" + jwt;
+            // 暂时定向至 profile
+            return "redirect:/auth/profile?token=" + jwt;
         } catch (Exception e) {
             model.addAttribute("error", "Invalid username or password.");
             return "login";
@@ -97,5 +96,55 @@ public class MemberController {
         memberRepository.save(user);
 
         return "redirect:/login";
+    }
+
+    @GetMapping("/profile")
+    public String showProfile(@RequestParam("token") String token, Model model) {
+        // 解析token获取用户名
+        String username = jwtUtils.getUserNameFromJwtToken(token);
+        Optional<Member> memberOptional = memberRepository.findByUsername(username);
+        if (memberOptional.isPresent()) {
+            model.addAttribute("member", memberOptional.get());
+        } else {
+            model.addAttribute("error", "Member not found");
+        }
+        return "profile"; // 返回视图名
+    }
+
+    @PostMapping("/profile/update")
+    @Transactional
+    public String updateProfile(@ModelAttribute Member member, Model model) {
+        Optional<Member> existingMemberOptional = memberRepository.findById(member.getId());
+        if (existingMemberOptional.isPresent()) {
+            Member existingMember = existingMemberOptional.get();
+            existingMember.setEmail(member.getEmail());
+            if (member.getPassword() != null && !member.getPassword().isEmpty()) {
+                existingMember.setPassword(passwordEncoder.encode(member.getPassword()));
+            }
+            memberRepository.save(existingMember);
+            model.addAttribute("member", existingMember);
+            model.addAttribute("success", "Profile updated successfully");
+        } else {
+            model.addAttribute("error", "Member not found");
+        }
+        return "profile"; // 返回视图名
+    }
+
+    @GetMapping("/members")
+    public String listMembers(Model model) {
+        List<Member> members = memberRepository.findAll();
+        model.addAttribute("members", members);
+        return "members"; // 返回视图名
+    }
+
+    @GetMapping("/member/{id}")
+    public String viewMemberProfile(@PathVariable("id") Long id, Model model) {
+        Optional<Member> memberOptional = memberRepository.findById(id);
+        if (memberOptional.isPresent()) {
+            model.addAttribute("member", memberOptional.get());
+        } else {
+            model.addAttribute("error", "Member not found");
+        }
+        return "memberProfile"; // 返回视图名
     }
 }

@@ -5,59 +5,147 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
             margin: 0;
             padding: 20px;
+        }
+
+        .products-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            max-width: 800px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            margin: 20px 0;
         }
-
         table, th, td {
-            border: 1px solid black;
-        }
-
-        th, td {
-            padding: 15px;
+            border: 1px solid #dddddd;
             text-align: left;
+            padding: 8px;
         }
-
         th {
             background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        th, td {
+            padding: 12px 15px;
+        }
+
+        .insert-fake {
+            display: block;
+            margin-bottom: 20px;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .insert-fake:hover {
+            text-decoration: underline;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .page-link {
+            margin: 0 5px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .page-link:hover {
+            background-color: #45a049;
+        }
+
+        .disabled-link {
+            pointer-events: none;
+            background-color: #ccc;
+        }
+
+        .cart-button {
+            background-color: #FF5722;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cart-button:hover {
+            background-color: #E64A19;
         }
     </style>
 </head>
 <body>
-    <h1>Products</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Stock</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="product : ${products}">
-                <td th:text="${product.id}">1</td>
-                <td th:text="${product.name}">Product Name</td>
-                <td th:text="${product.description}">Product Description</td>
-                <td th:text="${product.price}">100.00</td>
-                <td th:text="${product.stock}">10</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="products-container">
+        <h2>Products</h2>
+        <a href="/products/insertFake" class="insert-fake">Insert 10 Fake Products</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Category</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="product : ${products}">
+                    <td th:text="${product.name}"></td>
+                    <td th:text="${product.description}"></td>
+                    <td th:text="${product.price}"></td>
+                    <td th:text="${product.stock}"></td>
+                    <td th:text="${product.category}"></td>
+                    <td><button class="cart-button" th:data-product-id="${product.id}">Add to Cart</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <a th:if="${currentPage > 0}" th:href="@{/products(page=${currentPage - 1})}" class="page-link">Previous</a>
+            <a th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
+               th:href="@{/products(page=${page})}"
+               th:classappend="${page == currentPage} ? ' disabled-link' : ''"
+               th:text="${page + 1}" class="page-link">1</a>
+            <a th:if="${currentPage < totalPages - 1}" th:href="@{/products(page=${currentPage + 1})}" class="page-link">Next</a>
+        </div>
+    </div>
 
     <script>
-        // 检查URL中是否有token参数，并存储到localStorage
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        if (token) {
-            localStorage.setItem('token', token);
-        }
+        document.querySelectorAll('.cart-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const productId = button.getAttribute('data-product-id');
+                const memberId = 1; // You should replace this with the actual member ID
+                const quantity = 1; // Default quantity
+                fetch(`/cart/add?memberId=${memberId}&productId=${productId}&quantity=${quantity}`, {
+                    method: 'POST'
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Product added to cart');
+                    } else {
+                        alert('Failed to add product to cart');
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>

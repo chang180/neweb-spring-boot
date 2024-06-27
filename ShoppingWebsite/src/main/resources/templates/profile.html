@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .profile-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h2>Profile</h2>
+        <form id="profileForm" th:action="@{/auth/profile/update}" method="post" th:object="${member}">
+        	<input type="hidden" th:field="*{id}" />
+            <input type="text" th:field="*{username}" placeholder="Username" readonly>
+            <input type="email" th:field="*{email}" placeholder="Email" required>
+            <input type="password" th:field="*{password}" placeholder="Password">
+            <button type="submit">Update</button>
+        </form>
+        <div th:if="${error}" class="error">
+            <p th:text="${error}"></p>
+        </div>
+        <div th:if="${success}" class="success">
+            <p th:text="${success}"></p>
+        </div>
+    </div>
+</body>
+</html>

@@ -22,44 +22,43 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private AuthTokenFilter authTokenFilter;
+	@Autowired
+	private AuthTokenFilter authTokenFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+		return authConfig.getAuthenticationManager();
+	}
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/auth/register", "/auth/login", "/register", "/login", "/products").permitAll()
-                // .requestMatchers("/products").authenticated() // @todo: Fix JWT authentication for this endpoint
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(authorize -> authorize
+				// .requestMatchers("/auth/register", "/auth/login", "/register",
+				// "/login").permitAll()
+				// .requestMatchers("/products", "/profile", "/auth/profile").authenticated()
+				.requestMatchers("/**").permitAll() // 允许所有路径
+		).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+		return http.build();
+	}
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(List.of("*"));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+		configuration.setAllowCredentials(true);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 }

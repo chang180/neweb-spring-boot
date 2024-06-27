@@ -44,14 +44,6 @@ public class AuthTokenFilter implements Filter {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-            String path = httpRequest.getRequestURI();
-
-            // 如果是以下路径则跳过过滤器逻辑
-            if (path.equals("/auth/login") || path.equals("/auth/register") || path.equals("/login") || path.equals("/register")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
             String jwt = parseJwt(httpRequest);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);

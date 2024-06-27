@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取URL中的token参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                // 将token存储到localStorage
+                localStorage.setItem('token', token);
+                // 重定向到目标页面，例如/products
+                window.location.href = '/products';
+            } else {
+                // 如果没有token，重定向到登录页面
+                window.location.href = '/login';
+            }
+        });
+    </script>
+</head>
+<body>
+    <p>Redirecting...</p>
+</body>
+</html>
