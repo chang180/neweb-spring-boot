@@ -3,26 +3,27 @@ package com.neweb.web.controller;
 import com.neweb.web.model.Member;
 import com.neweb.web.payload.request.LoginRequest;
 import com.neweb.web.payload.request.RegisterRequest;
-import com.neweb.web.payload.response.JwtResponse;
 import com.neweb.web.repository.MemberRepository;
 import com.neweb.web.service.UserDetailsImpl;
 import com.neweb.web.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/auth")
+@Controller
+@RequestMapping("/auth")
 public class MemberController {
 
     @Autowired
@@ -39,57 +40,62 @@ public class MemberController {
 
     @PostMapping("/login")
     @Transactional
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public String authenticateUser(@ModelAttribute LoginRequest loginRequest, Model model) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
 
-        // Authenticate the user
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
 
-        String jwt = jwtUtils.generateJwtToken(authentication);
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+            // 更新数据库中的userToken和tokenExpiry
+            Date expiryDate = new Date(System.currentTimeMillis() + jwtUtils.getJwtExpirationMs());
+            Optional<Member> memberOptional = memberRepository.findByUsername(loginRequest.getUsername());
+            if (memberOptional.isPresent()) {
+                Member member = memberOptional.get();
+                member.setUserToken(jwt);
+                member.setTokenExpiry(expiryDate);
+                memberRepository.save(member);
+            }
 
-        // 设置 token 有效期
-        Date expiryDate = new Date(System.currentTimeMillis() + jwtUtils.getJwtExpirationMs());
-
-        // 更新数据库中的 userToken 和 tokenExpiry
-        memberRepository.updateUserToken(loginRequest.getUsername(), jwt, expiryDate);
-
-        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+            // 重定向到/products页面，并将token作为参数传递
+            return "redirect:/products?token=" + jwt;
+        } catch (Exception e) {
+            model.addAttribute("error", "Invalid username or password.");
+            return "login";
+        }
     }
 
     @PostMapping("/logout")
     @Transactional
-    public ResponseEntity<?> logoutUser(@RequestParam String username) {
+    public String logoutUser(@ModelAttribute String username) {
         memberRepository.clearUserToken(username);
-        return ResponseEntity.ok("User logged out successfully!");
+        return "redirect:/login?logout";
     }
 
     @PostMapping("/register")
     @Transactional
-    public ResponseEntity<?> registerUser(@ModelAttribute RegisterRequest signUpRequest) {
+    public String registerUser(@ModelAttribute RegisterRequest signUpRequest, Model model) {
         if (memberRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest().body("Error: Username is already taken!");
+            model.addAttribute("error", "Error: Username is already taken!");
+            return "register";
         }
 
         if (memberRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body("Error: Email is already in use!");
+            model.addAttribute("error", "Error: Email is already in use!");
+            return "register";
         }
 
-        // Create new user's account
         Member user = new Member(signUpRequest.getUsername(), signUpRequest.getEmail(), passwordEncoder.encode(signUpRequest.getPassword()));
-
         memberRepository.save(user);
 
-        return ResponseEntity.ok("User registered successfully!");
+        return "redirect:/login";
     }
 }

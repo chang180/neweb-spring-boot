@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
 import com.neweb.web.service.UserDetailsImpl;
 
 import jakarta.annotation.PostConstruct;
@@ -19,7 +18,7 @@ public class JwtUtils {
 
     private Key key;
 
-    private int jwtExpirationMs = 86400000; // 設置過期時間，這裡設置為1天
+    private int jwtExpirationMs = 86400000; // 设置过期时间，这里设置为1天
 
     @PostConstruct
     public void init() {
