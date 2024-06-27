@@ -1,9 +1,4 @@
 // static/js/scripts.js
-var token = /*[[${session.token}]]*/ 'null';
-if (token === 'null') {
-    window.location.href = '/';
-}
-
 function logout() {
     fetch('/auth/logout', {
         method: 'POST',

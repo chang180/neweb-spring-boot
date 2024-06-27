@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class ProductController {
 
@@ -18,11 +20,23 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/products")
-    public String getAllProducts(Model model, @RequestParam(defaultValue = "0") int page) {
-        Page<Product> productPage = productService.getProductsPaginated(page, 20);
-        model.addAttribute("products", productPage.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", productPage.getTotalPages());
+    public String getProducts(Model model, HttpSession session) {
+        String token = (String) session.getAttribute("token");
+        System.out.println("Session Token: " + token); // 打印 token
+        
+        // 如果 token 丢失，可以重定向到登录页面
+        if (token == null) {
+            return "redirect:/login";
+        }
+        
+        // 其他逻辑
+        Page<Product> productsPage = productService.getProductsPaginated(0, 20);
+        model.addAttribute("products", productsPage.getContent());
+        model.addAttribute("currentPage", 0);
+        model.addAttribute("totalPages", productsPage.getTotalPages());
+        model.addAttribute("categories", getCategories()); // 添加分类列表
+        
+        model.addAttribute("sessionToken", token); // 传递 token 到前端
         return "products";
     }
 
