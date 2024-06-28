@@ -1,3 +1,17 @@
+let memberId;
+
+// Fetch current user information on page load
+fetch('/auth/currentUser')
+    .then(response => response.json())
+    .then(data => {
+        memberId = data.id; // 假設後端返回的數據格式包含用戶ID
+        console.log(`Current member ID: ${memberId}`);
+        updateCartModal();
+    })
+    .catch(error => {
+        console.error('Error fetching current user:', error);
+    });
+
 function logout() {
     fetch('/auth/logout', {
         method: 'POST',
@@ -60,7 +74,7 @@ document.querySelectorAll('.details-button').forEach(button => {
                 document.getElementById('modalProductCategory').textContent = product.category;
 
                 // Check if the product is already in the cart
-                fetch(`/cart/check?productId=${productId}&memberId=1`)  // Update with actual member ID
+                fetch(`/cart/check?productId=${productId}&memberId=${memberId}`)
                     .then(response => response.json())
                     .then(cartItem => {
                         console.log('Cart item:', cartItem);
@@ -86,7 +100,6 @@ document.querySelectorAll('.details-button').forEach(button => {
 document.getElementById('modalAddToCartButton').addEventListener('click', () => {
     const productId = document.getElementById('modalAddToCartButton').getAttribute('data-product-id');
     const quantity = document.getElementById('modalProductQuantity').value;
-    const memberId = 1; // Update with actual member ID
     console.log(`Adding product ID: ${productId} with quantity: ${quantity} to cart for member ID: ${memberId}`);
 
     fetch(`/cart/add?memberId=${memberId}&productId=${productId}&quantity=${quantity}`, {
@@ -107,7 +120,6 @@ document.getElementById('modalAddToCartButton').addEventListener('click', () => 
 // Remove from cart from modal
 document.getElementById('modalRemoveFromCartButton').addEventListener('click', () => {
     const productId = document.getElementById('modalRemoveFromCartButton').getAttribute('data-product-id');
-    const memberId = 1; // Update with actual member ID
     console.log(`Removing product ID: ${productId} from cart for member ID: ${memberId}`);
 
     fetch(`/cart/remove?memberId=${memberId}&productId=${productId}`, {
@@ -135,7 +147,7 @@ function showCart() {
 // Update cart modal content
 function updateCartModal() {
     console.log('Updating cart modal');
-    fetch(`/cart/view?memberId=1`, { // Update with actual member ID
+    fetch(`/cart/view?memberId=${memberId}`, { 
         headers: {
             'Accept': 'application/json'
         }
@@ -172,8 +184,8 @@ function updateCartModal() {
 // Clear cart
 document.getElementById('clearCartButton').addEventListener('click', () => {
     if (confirm('Are you sure you want to clear the cart?')) {
-        console.log('Clearing cart for member ID: 1'); // Update with actual member ID
-        fetch(`/cart/clear?memberId=1`, {  // Update with actual member ID
+        console.log(`Clearing cart for member ID: ${memberId}`);
+        fetch(`/cart/clear?memberId=${memberId}`, { 
             method: 'DELETE'
         }).then(response => {
             if (response.ok) {

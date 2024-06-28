@@ -10,6 +10,7 @@ import com.neweb.web.util.JwtUtils;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -172,5 +173,26 @@ public class MemberController {
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
         boolean isValid = jwtUtils.validateJwtToken(token.replace("Bearer ", ""));
         return ResponseEntity.ok().body(Collections.singletonMap("valid", isValid));
+    }
+
+    @GetMapping("/currentUser")
+    @ResponseBody
+    public ResponseEntity<?> getCurrentUser() {
+        // 获取当前请求属性
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        String token = (String) attr.getRequest().getSession().getAttribute("token");
+
+        if (token == null || !jwtUtils.validateJwtToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        String username = jwtUtils.getUserNameFromJwtToken(token);
+        Optional<Member> memberOptional = memberRepository.findByUsername(username);
+        if (memberOptional.isPresent()) {
+            Member member = memberOptional.get();
+            return ResponseEntity.ok(Collections.singletonMap("id", member.getId()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
+        }
     }
 }
