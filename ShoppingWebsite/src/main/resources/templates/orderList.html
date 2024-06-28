@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>訂單列表</title>
+</head>
+<body>
+    <h1>訂單列表</h1>
+    <ul>
+        <li th:each="order : ${orders}">
+            <p>訂單號: <a th:href="@{/orders/{orderId}(orderId=${order.id})}" th:text="${order.id}"></a></p>
+            <p>總價格: <span th:text="${order.totalPrice}"></span></p>
+            <p>狀態: <span th:text="${order.status}"></span></p>
+        </li>
+    </ul>
+</body>
+</html>

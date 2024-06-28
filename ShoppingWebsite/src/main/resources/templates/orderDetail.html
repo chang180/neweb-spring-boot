@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>訂單詳情</title>
+</head>
+<body>
+    <h1>訂單詳情</h1>
+    <p>訂單號: <span th:text="${order.id}"></span></p>
+    <p>總價格: <span th:text="${order.totalPrice}"></span></p>
+    <p>狀態: <span th:text="${order.status}"></span></p>
+
+    <h2>商品列表</h2>
+    <ul>
+        <li th:each="item : ${order.orderItems}">
+            <p>商品名稱: <span th:text="${item.product.name}"></span></p>
+            <p>數量: <span th:text="${item.quantity}"></span></p>
+            <p>小計: <span th:text="${item.price}"></span></p>
+        </li>
+    </ul>
+
+    <button onclick="window.location.href='/orders'">回訂單列表</button>
+    <form th:action="@{/orders/{orderId}/cancel(orderId=${order.id})}" method="post">
+        <button type="submit">取消訂單</button>
+    </form>
+</body>
+</html>

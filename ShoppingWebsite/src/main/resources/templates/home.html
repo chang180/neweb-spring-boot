@@ -53,7 +53,7 @@
             <button th:attr="onclick='window.location.href=\'/products\''">Go to Products</button>
             <button th:attr="onclick='window.location.href=\'/auth/members\''">View Members</button>
             <div th:if="${session.userId == 1}">
-                <button th:attr="onclick='window.location.href=\'/adminProducts\''">Manage Products</button>
+                <button th:attr="onclick='window.location.href=\'/admin/products\''">Manage Products</button>
             </div>
         </div>
     </div>
