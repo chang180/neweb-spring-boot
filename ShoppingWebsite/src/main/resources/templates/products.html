@@ -16,41 +16,26 @@
     <div class="products-container">
         <h2>Products</h2>
         <button class="logout-button" onclick="logout()">Logout</button>
+        <button class="show-cart-button" onclick="showCart()">Show Cart</button>
         <table>
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Description</th>
                     <th>Price</th>
-                    <th>Stock</th>
-                    <th>Category</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="product : ${products}">
-                    <td><a href="javascript:void(0);" th:text="${product.name}" th:data-product-id="${product.id}" class="product-link"></a></td>
-                    <td th:text="${product.description}"></td>
+                    <td th:text="${product.name}"></td>
                     <td th:text="${product.price}"></td>
-                    <td th:text="${product.stock}"></td>
-                    <td th:text="${product.category}"></td>
-                    <td><button class="cart-button" th:data-product-id="${product.id}">Add to Cart</button></td>
+                    <td><button class="details-button" th:data-product-id="${product.id}">Details</button></td>
                 </tr>
             </tbody>
         </table>
-        <div class="pagination">
-            <a th:if="${currentPage > 0}"
-                th:href="@{/products(page=${currentPage - 1})}" class="page-link">Previous</a>
-            <a th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
-                th:href="@{/products(page=${page})}"
-                th:classappend="${page == currentPage} ? ' disabled-link' : ''"
-                th:text="${page + 1}" class="page-link">1</a>
-            <a th:if="${currentPage < totalPages - 1}"
-                th:href="@{/products(page=${currentPage + 1})}" class="page-link">Next</a>
-        </div>
     </div>
 
-    <!-- The Modal -->
+    <!-- Product Modal -->
     <div id="productModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -63,9 +48,41 @@
                 <p><strong>Price:</strong> $<span id="modalProductPrice"></span></p>
                 <p><strong>Stock:</strong> <span id="modalProductStock"></span></p>
                 <p><strong>Category:</strong> <span id="modalProductCategory"></span></p>
+                <p><strong>Quantity:</strong> <input type="number" id="modalProductQuantity" min="1" /></p>
             </div>
             <div class="modal-footer">
                 <button id="modalAddToCartButton">Add to Cart</button>
+                <button id="modalRemoveFromCartButton" style="background-color: red;">Remove from Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Shopping Cart</h2>
+                <span class="close-cart">&times;</span>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cartItems">
+                        <!-- Cart items will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <p><strong>Total:</strong> $<span id="cartTotal"></span></p>
+                <button id="clearCartButton" style="background-color: red;">Clear Cart</button>
+                <button id="checkoutButton" style="background-color: blue;">Checkout</button>
             </div>
         </div>
     </div>
