@@ -2,67 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Members</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .members-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 0 auto;
-            max-width: 600px;
-            position: relative;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        li {
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .edit-profile-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .edit-profile-button:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/members.css}" />
     <script th:inline="javascript">
         /*<![CDATA[*/
         var token = /*[[${session.token}]]*/ 'null';
@@ -75,7 +15,10 @@
 <body>
     <div class="members-container">
         <h2>Members</h2>
-        <button class="edit-profile-button" onclick="window.location.href='/auth/profile'">Edit Profile</button>
+        <div class="button-container">
+            <button class="home-button" onclick="window.location.href='/'">Back to Home</button>
+            <button class="edit-profile-button" onclick="window.location.href='/member/profile'">Edit Profile</button>
+        </div>
         <ul>
             <li th:each="member : ${members}">
                 <span th:text="${member.username}"></span>
