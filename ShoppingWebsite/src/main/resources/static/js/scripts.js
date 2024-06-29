@@ -13,7 +13,7 @@ fetch('/member/currentUser')
     });
 
 function logout() {
-    fetch('/member/logout', {
+    fetch('/auth/logout', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

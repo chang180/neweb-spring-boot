@@ -71,14 +71,14 @@ public class MemberController {
         return "profile"; // 返回视图名
     }
 
-    @GetMapping("/members")
+    @GetMapping("/list")
     public String listMembers(Model model) {
         List<Member> members = memberRepository.findAll();
         model.addAttribute("members", members);
         return "members"; // 返回视图名
     }
 
-    @GetMapping("/member/{id}")
+    @GetMapping("/{id}")
     public String viewMemberProfile(@PathVariable("id") Long id, Model model) {
         Optional<Member> memberOptional = memberRepository.findById(id);
         if (memberOptional.isPresent()) {
@@ -87,13 +87,6 @@ public class MemberController {
             model.addAttribute("error", "Member not found");
         }
         return "memberProfile"; // 返回视图名
-    }
-
-    @PostMapping("/validateToken")
-    @ResponseBody
-    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
-        boolean isValid = jwtUtils.validateJwtToken(token.replace("Bearer ", ""));
-        return ResponseEntity.ok().body(Collections.singletonMap("valid", isValid));
     }
 
     @GetMapping("/currentUser")

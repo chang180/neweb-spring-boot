@@ -22,10 +22,10 @@ public class OrderController {
         try {
             Order order = orderService.createOrder(memberId);
             model.addAttribute("order", order);
-            return "orderDetail"; // 導向訂單詳細頁面
+            return "orderDetail"; // 导向订单详细页面
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
-            return "error"; // 錯誤處理頁面
+            return "error"; // 错误处理页面
         }
     }
 
@@ -38,9 +38,14 @@ public class OrderController {
 
     @GetMapping("/detail")
     public String getOrderDetail(@RequestParam Long id, Model model) {
-        Order order = orderService.getOrderById(id);
-        model.addAttribute("order", order);
-        return "orderDetail";
+        try {
+            Order order = orderService.getOrderById(id);
+            model.addAttribute("order", order);
+            return "orderDetail";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
     }
 
     @PostMapping("/updateStatus")
@@ -63,5 +68,14 @@ public class OrderController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    // 新增用于管理订单的方法
+    @GetMapping("/manage")
+    public String manageOrders(Model model) {
+        List<Order> orders = orderService.getAllOrders();
+        model.addAttribute("orders", orders);
+        model.addAttribute("statuses", List.of("Pending", "Paid", "Shipped", "Delivered", "Cancelled"));
+        return "manageOrders";
     }
 }

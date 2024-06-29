@@ -10,6 +10,7 @@ import com.neweb.web.util.JwtUtils;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -90,6 +91,14 @@ public class AuthController {
         SecurityContextHolder.clearContext(); // 清除 Spring Security 上下文中的身份验证信息
         return "redirect:/login?logout";
     }
+    
+    @GetMapping("/logout")
+    @Transactional
+    public String logoutUserGet(HttpSession session) {
+        session.invalidate(); // 清除所有 session 数据
+        SecurityContextHolder.clearContext(); // 清除 Spring Security 上下文中的身份验证信息
+        return "redirect:/login?logout";
+    }
 
     @PostMapping("/register")
     @Transactional
@@ -108,5 +117,12 @@ public class AuthController {
         memberRepository.save(user);
 
         return "redirect:/login";
+    }
+    
+    @PostMapping("/validateToken")
+    @ResponseBody
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        boolean isValid = jwtUtils.validateJwtToken(token.replace("Bearer ", ""));
+        return ResponseEntity.ok().body(Collections.singletonMap("valid", isValid));
     }
 }

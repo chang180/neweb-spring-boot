@@ -79,7 +79,7 @@
         <ul>
             <li th:each="member : ${members}">
                 <span th:text="${member.username}"></span>
-                <a th:href="@{/auth/member/{id}(id=${member.id})}">View Profile</a>
+                <a th:href="@{/member/{id}(id=${member.id})}">View Profile</a>
             </li>
         </ul>
     </div>

@@ -60,7 +60,7 @@
 <body>
     <div class="profile-container">
         <h2>Profile</h2>
-        <form id="profileForm" th:action="@{/auth/profile/update}" method="post" th:object="${member}">
+        <form id="profileForm" th:action="@{/member/profile/update}" method="post" th:object="${member}">
         	<input type="hidden" th:field="*{id}" />
             <input type="text" th:field="*{username}" placeholder="Username" readonly>
             <input type="email" th:field="*{email}" placeholder="Email" required>

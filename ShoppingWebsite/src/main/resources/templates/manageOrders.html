@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Orders</title>
+    <link rel="stylesheet" th:href="@{/css/manageOrders.css}" />
+</head>
+<body>
+    <div class="container">
+        <h2>Manage Orders</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order Number</th>
+                    <th>Member</th>
+                    <th>Order Date</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.orderNumber}"></td>
+                    <td th:text="${order.member.username}"></td>
+                    <td th:text="${#dates.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td th:text="${order.totalPrice}"></td>
+                    <td>
+                        <select th:attr="data-order-id=${order.id}">
+                            <option th:each="status : ${statuses}" th:value="${status}" th:text="${status}" th:selected="${status == order.status}"></option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="update-status-button" th:attr="data-order-id=${order.id}">Update Status</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <button id="backToHomeButton">Back to Home</button>
+    </div>
+
+    <script th:src="@{/js/manageOrders.js}"></script>
+</body>
+</html>

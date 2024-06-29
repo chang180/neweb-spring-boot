@@ -53,9 +53,10 @@
         <div th:if="${session.token != null}">
             <button th:onclick="|window.location.href='/products'|">Go to Products</button>
             <button th:onclick="|window.location.href='/orders?memberId=' + ${session.userId}|">View Orders</button>
-            <button th:onclick="|window.location.href='/auth/members'|">View Members</button>
+            <button th:onclick="|window.location.href='/member/list'|">View Members</button>
             <div th:if="${session.userId == 1}">
                 <button th:onclick="|window.location.href='/admin/products'|">Manage Products</button>
+                <button th:onclick="|window.location.href='/orders/manage'|">Manage Orders</button>
             </div>
         </div>
     </div>

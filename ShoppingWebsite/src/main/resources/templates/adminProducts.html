@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Admin Products</title>
-    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <link rel="stylesheet" th:href="@{/css/adminProducts.css}" />
     <script th:inline="javascript">
         /*<![CDATA[*/
         var token = /*[[${session.token}]]*/ 'null';
@@ -35,7 +35,7 @@
     </script>
 </head>
 <body>
-    <div class="products-container">
+    <div class="container">
         <h2>Admin Products Management</h2>
         <a href="/products/insertFake" class="insert-fake">Insert 10 Fake Products</a>
         <button class="add-button" id="addProductBtn">Add New Product</button>
@@ -50,7 +50,7 @@
                     <select th:name="category">
                         <option th:each="category : ${categories}" th:value="${category}" th:text="${category}" th:selected="${category == product.category}"></option>
                     </select>
-                    <button type="submit">Save</button>
+                    <button type="submit" class="add-button">Save</button>
                 </form>
                 <button class="delete-button" th:data-product-id="${product.id}">Delete</button>
             </li>
@@ -63,6 +63,7 @@
                th:text="${page + 1}" class="page-link">1</a>
             <a th:if="${currentPage < totalPages - 1}" th:href="@{/admin/products(page=${currentPage + 1})}" class="page-link">Next</a>
         </div>
+        <button class="home-button" onclick="window.location.href='/'">Back to Home</button>
     </div>
 
     <!-- The Modal -->
