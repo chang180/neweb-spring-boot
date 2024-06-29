@@ -1,64 +1,74 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Home</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+<title>Home</title>
+<style>
+body {
+	font-family: Arial, sans-serif;
+	background-color: #f2f2f2;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
 
-        .home-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            text-align: center;
-        }
+.home-container {
+	background-color: #fff;
+	padding: 20px;
+	border-radius: 5px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	width: 300px;
+	text-align: center;
+}
 
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+button {
+	width: 100%;
+	padding: 10px;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	margin-top: 20px;
+}
 
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+button:hover {
+	background-color: #45a049;
+}
+</style>
 </head>
 <body>
-    <div class="home-container">
-        <h2>Welcome to Our Website</h2>
-        <p>Please click the button below to login.</p>
+	<div class="home-container">
+		<h2>Welcome to Our Website</h2>
+		<p>Please choose function.</p>
+		<div th:if="${warning}" class="alert alert-warning"
+			th:text="${warning}"></div>
 
-        <!-- 使用 Thymeleaf 控制按鈕的顯示 -->
-        <div th:if="${session.token == null}">
-            <button th:onclick="|window.location.href='/login'|">Login</button>
-            <button style="background-color: #FF5733;" th:onclick="|window.location.href='/register'|">Register</button>
-        </div>
 
-        <div th:if="${session.token != null}">
-            <button th:onclick="|window.location.href='/products'|">Go to Products</button>
-            <button th:onclick="|window.location.href='/orders?memberId=' + ${session.userId}|">View Orders</button>
-            <button th:onclick="|window.location.href='/member/list'|">View Members</button>
-            <div th:if="${session.userId == 1}">
-                <button th:onclick="|window.location.href='/admin/products'|">Manage Products</button>
-                <button th:onclick="|window.location.href='/orders/manage'|">Manage Orders</button>
-            </div>
-        </div>
-    </div>
+		<!-- 使用 Thymeleaf 控制按鈕的顯示 -->
+		<div th:if="${session.token == null}">
+			<button th:onclick="|window.location.href='/login'|">Login</button>
+			<button style="background-color: #FF5733;"
+				th:onclick="|window.location.href='/register'|">Register</button>
+		</div>
+
+		<div th:if="${session.token != null}">
+			<button th:onclick="|window.location.href='/products'|">Go
+				to Products</button>
+			<button
+				th:onclick="|window.location.href='/orders?memberId=' + ${session.userId}|">View
+				Orders</button>
+			<button th:onclick="|window.location.href='/member/list'|">View
+				Members</button>
+			<div th:if="${session.userId == 1}">
+				<button th:onclick="|window.location.href='/admin/products'|">Manage
+					Products</button>
+				<button th:onclick="|window.location.href='/orders/manage'|">Manage
+					Orders</button>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

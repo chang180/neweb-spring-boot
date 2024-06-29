@@ -18,7 +18,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -92,7 +94,6 @@ public class MemberController {
     @GetMapping("/currentUser")
     @ResponseBody
     public ResponseEntity<?> getCurrentUser() {
-        // 获取当前请求属性
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         String token = (String) attr.getRequest().getSession().getAttribute("token");
 
@@ -104,7 +105,10 @@ public class MemberController {
         Optional<Member> memberOptional = memberRepository.findByUsername(username);
         if (memberOptional.isPresent()) {
             Member member = memberOptional.get();
-            return ResponseEntity.ok(Collections.singletonMap("id", member.getId()));
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", member.getId());
+            response.put("email", member.getEmail());
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
         }

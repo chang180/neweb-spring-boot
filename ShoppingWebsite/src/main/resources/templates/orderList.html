@@ -7,30 +7,45 @@
 </head>
 <body>
     <h2>Order List</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Order Number</th>
-                <th>Order Date</th>
-                <th>Total Price</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="order : ${orders}">
-                <td th:text="${order.orderNumber}"></td>
-                <td th:text="${order.orderDate}"></td>
-                <td th:text="${order.totalPrice}"></td>
-                <td th:text="${order.status}"></td>
-                <td><a th:href="@{/orders/detail(id=${order.id})}">View Details</a></td>
-            </tr>
-        </tbody>
-    </table>
+    
+    <div th:if="${orders.size() > 0}">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order Number</th>
+                    <th>Order Date</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.orderNumber}"></td>
+                    <td th:text="${order.orderDate}"></td>
+                    <td th:text="${order.totalPrice}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td><a th:href="@{/orders/detail(id=${order.id})}">View Details</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:if="${orders.size() == 0}">
+        <p>No orders found.</p>
+    </div>
+
     <button id="homeButton" type="button" class="home-button">Back to Home</button>
 
-    <script>
-        const memberId = /*[[${orders[0].member.id}]]*/ 0; // Assume at least one order exists
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        let memberId = 0;
+        if (/*[[${orders.size()}]]*/ > 0) {
+            memberId = /*[[${orders.get(0).member.id}]]*/;
+        }
+        /*]]>*/
+        document.getElementById("homeButton").addEventListener("click", () => {
+            window.location.href = '/';
+        });
     </script>
 </body>
 </html>

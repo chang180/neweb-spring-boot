@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>NewebPay Payment</title>
+    <script th:src="@{/js/pay.js}"></script> <!-- 引入pay.js -->
+</head>
+<body>
+    <form action="https://ccore.newebpay.com/MPG/mpg_gateway" method="post">
+        <input type="hidden" name="MerchantID" th:value="${paymentRequest.MerchantID}"/>
+        <input type="hidden" name="TradeInfo" th:value="${paymentRequest.TradeInfo}"/>
+        <input type="hidden" name="TradeSha" th:value="${paymentRequest.TradeSha}"/>
+        <input type="hidden" name="Version" th:value="${paymentRequest.Version}"/>
+        <button type="submit">Pay Now</button>
+    </form>
+
+    <h3>Original Parameters</h3>
+    <ul>
+        <li>RespondType: <span th:text="${originalParams.RespondType}"></span></li>
+        <li>ClientBackURL: <span th:text="${originalParams.ClientBackURL}"></span></li>
+        <li>Version: <span th:text="${originalParams.Version}"></span></li>
+        <li>ItemDesc: <span th:text="${originalParams.ItemDesc}"></span></li>
+        <li>NotifyURL: <span th:text="${originalParams.NotifyURL}"></span></li>
+        <li>Amt: <span th:text="${originalParams.Amt}"></span></li>
+        <li>MerchantOrderNo: <span th:text="${originalParams.MerchantOrderNo}"></span></li>
+        <li>ReturnURL: <span th:text="${originalParams.ReturnURL}"></span></li>
+        <li>MerchantID: <span th:text="${originalParams.MerchantID}"></span></li>
+        <li>TimeStamp: <span th:text="${originalParams.TimeStamp}"></span></li>
+    </ul>
+
+    <h3>Encryption Keys</h3>
+    <ul>
+        <li>Key: <span th:text="${key}"></span></li>
+        <li>IV: <span th:text="${iv}"></span></li>
+    </ul>
+</body>
+</html>
