@@ -43,17 +43,19 @@
     <div class="home-container">
         <h2>Welcome to Our Website</h2>
         <p>Please click the button below to login.</p>
-        
+
         <!-- 使用 Thymeleaf 控制按鈕的顯示 -->
         <div th:if="${session.token == null}">
-            <button th:attr="onclick='window.location.href=\'/login\''">Login</button>
+            <button th:onclick="|window.location.href='/login'|">Login</button>
+            <button style="background-color: #FF5733;" th:onclick="|window.location.href='/register'|">Register</button>
         </div>
-        
+
         <div th:if="${session.token != null}">
-            <button th:attr="onclick='window.location.href=\'/products\''">Go to Products</button>
-            <button th:attr="onclick='window.location.href=\'/auth/members\''">View Members</button>
+            <button th:onclick="|window.location.href='/products'|">Go to Products</button>
+            <button th:onclick="|window.location.href='/orders?memberId=' + ${session.userId}|">View Orders</button>
+            <button th:onclick="|window.location.href='/auth/members'|">View Members</button>
             <div th:if="${session.userId == 1}">
-                <button th:attr="onclick='window.location.href=\'/admin/products\''">Manage Products</button>
+                <button th:onclick="|window.location.href='/admin/products'|">Manage Products</button>
             </div>
         </div>
     </div>

@@ -18,6 +18,7 @@ public class Order {
     private Date orderDate;
     private double totalPrice;
     private String status;
+    private String orderNumber; // 新增字段
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
@@ -62,6 +63,14 @@ public class Order {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     public List<OrderItem> getOrderItems() {

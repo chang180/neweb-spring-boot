@@ -1,26 +1,46 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>訂單詳情</title>
+    <title>Order Detail</title>
+    <link rel="stylesheet" th:href="@{/css/orderDetail.css}" />
 </head>
 <body>
-    <h1>訂單詳情</h1>
-    <p>訂單號: <span th:text="${order.id}"></span></p>
-    <p>總價格: <span th:text="${order.totalPrice}"></span></p>
-    <p>狀態: <span th:text="${order.status}"></span></p>
+    <h2>Order Detail</h2>
+    <p><strong>Order Number:</strong> <span th:text="${order.orderNumber}"></span></p>
+    <p><strong>Member:</strong> <span th:text="${order.member.username}"></span></p>
+    <p><strong>Order Date:</strong> <span th:text="${order.orderDate}"></span></p>
+    <p><strong>Total Price:</strong> <span th:text="${order.totalPrice}"></span></p>
+    <p><strong>Status:</strong> <span th:text="${order.status}"></span></p>
 
-    <h2>商品列表</h2>
-    <ul>
-        <li th:each="item : ${order.orderItems}">
-            <p>商品名稱: <span th:text="${item.product.name}"></span></p>
-            <p>數量: <span th:text="${item.quantity}"></span></p>
-            <p>小計: <span th:text="${item.price}"></span></p>
-        </li>
-    </ul>
+    <h3>Order Items</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${order.orderItems}">
+                <td th:text="${item.product.name}"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="${item.price}"></td>
+            </tr>
+        </tbody>
+    </table>
 
-    <button onclick="window.location.href='/orders'">回訂單列表</button>
-    <form th:action="@{/orders/{orderId}/cancel(orderId=${order.id})}" method="post">
-        <button type="submit">取消訂單</button>
-    </form>
+    <div class="button-container">
+        <button id="backToOrdersButton" class="back-button">Back to Orders</button>
+        <button id="cancelOrderButton" class="cancel-button">Cancel Order</button>
+    </div>
+
+    <script th:src="@{/js/orderDetail.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var orderId = /*[[${order.id}]]*/ '0';
+        var memberId = /*[[${order.member.id}]]*/ '0';
+        /*]]>*/
+    </script>
 </body>
 </html>

@@ -201,9 +201,58 @@ document.getElementById('clearCartButton').addEventListener('click', () => {
 });
 
 // Checkout button
-document.getElementById('checkoutButton').addEventListener('click', () => {
-    alert('Checkout functionality will be implemented later.');
-});
+document.getElementById("checkoutButton").addEventListener("click", function() {
+                
+        // 發送POST請求到 /orders/checkout
+        fetch(`/orders/checkout?memberId=${memberId}`, {
+            method: "POST"
+        }).then(response => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error("Checkout failed");
+            }
+        }).then(message => {
+            alert(message);
+            // 清空購物車UI
+            // 你的清空購物車UI的代碼
+        }).catch(error => {
+            alert(error.message);
+        });
+    });
+
+// Navigate to orders page
+function goToOrders(memberId) {
+    window.location.href = '/orders?memberId=' + memberId;
+}
+
+// Cancel order
+function cancelOrder(orderId) {
+    fetch('/orders/cancel?orderId=' + orderId, {
+        method: 'POST'
+    }).then(response => {
+        if (response.ok) {
+            window.location.href = '/orders?memberId=' + memberId;
+        } else {
+            alert('Failed to cancel order');
+        }
+    });
+}
 
 // Initialize cart modal
 updateCartModal();
+
+// Ensure that goToOrders and cancelOrder are set after DOM is fully loaded
+document.addEventListener("DOMContentLoaded", () => {
+    const backToOrdersButton = document.querySelector('button[onclick^="goToOrders"]');
+    const cancelOrderButton = document.querySelector('button[onclick^="cancelOrder"]');
+    
+    if (backToOrdersButton) {
+        backToOrdersButton.onclick = () => goToOrders(memberId);
+    }
+    
+    if (cancelOrderButton) {
+        const orderId = cancelOrderButton.getAttribute('onclick').match(/\d+/)[0];
+        cancelOrderButton.onclick = () => cancelOrder(orderId);
+    }
+});

@@ -1,92 +1,114 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Products</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        var token = /*[[${session.token}]]*/ 'null';
-        if (token === 'null') {
-            window.location.href = '/';
-        }
-        /*]]>*/
-    </script>
+<title>Products</title>
+<link rel="stylesheet" th:href="@{/css/styles.css}">
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	var token = /*[[${session.token}]]*/'null';
+	if (token === 'null') {
+		window.location.href = '/';
+	}
+	/*]]>*/
+</script>
 </head>
 <body>
-    <div class="products-container">
-        <h2>Products</h2>
-        <button class="logout-button" onclick="logout()">Logout</button>
-        <button class="show-cart-button" onclick="showCart()">Show Cart</button>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="product : ${products}">
-                    <td th:text="${product.name}"></td>
-                    <td th:text="${product.price}"></td>
-                    <td><button class="details-button" th:data-product-id="${product.id}">Details</button></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+	<div class="products-container">
+		<h2>Products</h2>
+		<button class="logout-button" onclick="logout()">Logout</button>
+		<button class="show-cart-button" onclick="showCart()">Show
+			Cart</button>
+		<button
+			th:onclick="|window.location.href='/orders?memberId=' + ${session.userId}|">View
+			Orders</button>
+		<table>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Price</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="product : ${products}">
+					<td th:text="${product.name}"></td>
+					<td th:text="${product.price}"></td>
+					<td><button class="details-button"
+							th:data-product-id="${product.id}">Details</button></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 
-    <!-- Product Modal -->
-    <div id="productModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Product Details</h2>
-                <span class="close">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p><strong>Name:</strong> <span id="modalProductName"></span></p>
-                <p><strong>Description:</strong> <span id="modalProductDescription"></span></p>
-                <p><strong>Price:</strong> $<span id="modalProductPrice"></span></p>
-                <p><strong>Stock:</strong> <span id="modalProductStock"></span></p>
-                <p><strong>Category:</strong> <span id="modalProductCategory"></span></p>
-                <p><strong>Quantity:</strong> <input type="number" id="modalProductQuantity" min="1" /></p>
-            </div>
-            <div class="modal-footer">
-                <button id="modalAddToCartButton">Add to Cart</button>
-                <button id="modalRemoveFromCartButton" style="background-color: red;">Remove from Cart</button>
-            </div>
-        </div>
-    </div>
+	<!-- Product Modal -->
+	<div id="productModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2>Product Details</h2>
+				<span class="close">&times;</span>
+			</div>
+			<div class="modal-body">
+				<p>
+					<strong>Name:</strong> <span id="modalProductName"></span>
+				</p>
+				<p>
+					<strong>Description:</strong> <span id="modalProductDescription"></span>
+				</p>
+				<p>
+					<strong>Price:</strong> $<span id="modalProductPrice"></span>
+				</p>
+				<p>
+					<strong>Stock:</strong> <span id="modalProductStock"></span>
+				</p>
+				<p>
+					<strong>Category:</strong> <span id="modalProductCategory"></span>
+				</p>
+				<p>
+					<strong>Quantity:</strong> <input type="number"
+						id="modalProductQuantity" min="1" />
+				</p>
+			</div>
+			<div class="modal-footer">
+				<button id="modalAddToCartButton">Add to Cart</button>
+				<button id="modalRemoveFromCartButton"
+					style="background-color: red;">Remove from Cart</button>
+			</div>
+		</div>
+	</div>
 
-    <!-- Cart Modal -->
-    <div id="cartModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Shopping Cart</h2>
-                <span class="close-cart">&times;</span>
-            </div>
-            <div class="modal-body">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cartItems">
-                        <!-- Cart items will be dynamically added here -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <p><strong>Total:</strong> $<span id="cartTotal"></span></p>
-                <button id="clearCartButton" style="background-color: red;">Clear Cart</button>
-                <button id="checkoutButton" style="background-color: blue;">Checkout</button>
-            </div>
-        </div>
-    </div>
+	<!-- Cart Modal -->
+	<div id="cartModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2>Shopping Cart</h2>
+				<span class="close-cart">&times;</span>
+			</div>
+			<div class="modal-body">
+				<table>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th>Subtotal</th>
+						</tr>
+					</thead>
+					<tbody id="cartItems">
+						<!-- Cart items will be dynamically added here -->
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<p>
+					<strong>Total:</strong> $<span id="cartTotal"></span>
+				</p>
+				<button id="clearCartButton" style="background-color: red;">Clear
+					Cart</button>
+				<button id="checkoutButton" style="background-color: blue;">Checkout</button>
+			</div>
+		</div>
+	</div>
 
-    <script th:src="@{/js/scripts.js}"></script>
+	<script th:src="@{/js/scripts.js}"></script>
 </body>
 </html>

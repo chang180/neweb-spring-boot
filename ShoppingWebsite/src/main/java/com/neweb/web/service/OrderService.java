@@ -39,8 +39,9 @@ public class OrderService {
         order.setMember(member);
         order.setOrderDate(new Date());
         order.setStatus("Pending");
+        order.setOrderNumber("order" + memberId + System.currentTimeMillis());
 
-        final double[] totalPrice = {0}; // Use an array to allow modification within lambda
+        final double[] totalPrice = {0};
         List<OrderItem> orderItems = cartItems.stream().map(cart -> {
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
@@ -73,4 +74,9 @@ public class OrderService {
         order.setStatus(status);
         return orderRepository.save(order);
     }
+
+    public Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+    }
 }
+

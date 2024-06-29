@@ -1,16 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>訂單列表</title>
+    <title>Order List</title>
+    <link rel="stylesheet" th:href="@{/css/orderList.css}" />
+    <script th:src="@{/js/orderList.js}"></script>
 </head>
 <body>
-    <h1>訂單列表</h1>
-    <ul>
-        <li th:each="order : ${orders}">
-            <p>訂單號: <a th:href="@{/orders/{orderId}(orderId=${order.id})}" th:text="${order.id}"></a></p>
-            <p>總價格: <span th:text="${order.totalPrice}"></span></p>
-            <p>狀態: <span th:text="${order.status}"></span></p>
-        </li>
-    </ul>
+    <h2>Order List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Order Number</th>
+                <th>Order Date</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.orderNumber}"></td>
+                <td th:text="${order.orderDate}"></td>
+                <td th:text="${order.totalPrice}"></td>
+                <td th:text="${order.status}"></td>
+                <td><a th:href="@{/orders/detail(id=${order.id})}">View Details</a></td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="homeButton" type="button" class="home-button">Back to Home</button>
+
+    <script>
+        const memberId = /*[[${orders[0].member.id}]]*/ 0; // Assume at least one order exists
+    </script>
 </body>
 </html>
