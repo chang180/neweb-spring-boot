@@ -1,7 +1,7 @@
 let memberId;
 
 // Fetch current user information on page load
-fetch('/auth/currentUser')
+fetch('/member/currentUser')
     .then(response => response.json())
     .then(data => {
         memberId = data.id; // 假設後端返回的數據格式包含用戶ID
@@ -13,7 +13,7 @@ fetch('/auth/currentUser')
     });
 
 function logout() {
-    fetch('/auth/logout', {
+    fetch('/member/logout', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -222,7 +222,7 @@ document.getElementById("checkoutButton").addEventListener("click", function() {
     });
 
 // Navigate to orders page
-function goToOrders(memberId) {
+function goToOrders() {
     window.location.href = '/orders?memberId=' + memberId;
 }
 
@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelOrderButton = document.querySelector('button[onclick^="cancelOrder"]');
     
     if (backToOrdersButton) {
-        backToOrdersButton.onclick = () => goToOrders(memberId);
+        backToOrdersButton.onclick = () => goToOrders();
     }
     
     if (cancelOrderButton) {

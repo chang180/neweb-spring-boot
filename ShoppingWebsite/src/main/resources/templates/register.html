@@ -48,6 +48,11 @@
         button:hover {
             background-color: #45a049;
         }
+
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -64,6 +69,7 @@
             <input type="password" id="password" th:field="*{password}" required>
             <br>
             <button type="submit">Register</button>
+            <div class="error-message" th:if="${error}" th:text="${error}"></div>
         </form>
     </div>
     

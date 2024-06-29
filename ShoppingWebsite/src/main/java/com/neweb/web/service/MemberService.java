@@ -16,6 +16,10 @@ public class MemberService {
     private PasswordEncoder passwordEncoder;
 
     public void registerMember(Member member) {
+        if (memberRepository.existsByEmail(member.getEmail())) {
+            throw new RuntimeException("Email already registered");
+        }
+
         member.setPassword(passwordEncoder.encode(member.getPassword()));
         memberRepository.save(member);
     }
