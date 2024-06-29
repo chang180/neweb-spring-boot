@@ -8,6 +8,12 @@
 <body>
     <div class="products-container">
         <h2>Products</h2>
+        <div class="search-bar">
+            <form id="searchForm" action="/search" method="get">
+                <input type="text" name="keyword" placeholder="Enter keyword" required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
         <button class="logout-button" onclick="logout()">Logout</button>
         <button class="show-cart-button" onclick="showCart()">Show Cart</button>
         <button th:onclick="|window.location.href='/orders?memberId=' + ${session.userId}|">View Orders</button>

@@ -4,6 +4,8 @@ import com.neweb.web.model.Product;
 import com.neweb.web.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -81,6 +83,40 @@ public class ProductController {
     public Product getProductById(@PathVariable Long id) {
         Optional<Product> product = productService.getProductById(id);
         return product.orElse(null); // Handle product not found case as per your need
+    }
+
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam(value = "keyword", required = false) String keyword,
+                                 @RequestParam(value = "category", required = false) String category,
+                                 @RequestParam(value = "page", defaultValue = "0") int page,
+                                 @RequestParam(value = "size", defaultValue = "10") int size,
+                                 Model model) {
+        List<Product> products;
+        if (keyword != null && !keyword.isEmpty() && category != null && !category.isEmpty()) {
+            products = productService.searchProductsByKeywordAndCategory(keyword, category);
+        } else if (keyword != null && !keyword.isEmpty()) {
+            products = productService.searchProducts(keyword);
+        } else if (category != null && !category.isEmpty()) {
+            products = productService.searchProductsByCategory(category);
+        } else {
+            products = productService.getProductsPaginated(page, size).getContent();
+        }
+
+        int totalResults = products.size();
+        int start = Math.min(page * size, totalResults);
+        int end = Math.min((page + 1) * size, totalResults);
+        List<Product> paginatedProducts = products.subList(start, end);
+
+        Page<Product> productPage = new PageImpl<>(paginatedProducts, PageRequest.of(page, size), totalResults);
+
+        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("category", category);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("totalResults", totalResults);
+
+        return "searchResults";
     }
 
     private List<String> getCategories() {

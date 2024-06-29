@@ -1,23 +1,30 @@
 package com.neweb.web.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
+@Document(indexName = "products")
 public class Product {
 
+    @jakarta.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Field(type = FieldType.Text)
     @NotNull
     @Size(min = 1, max = 100)
     private String name;
 
+    @Field(type = FieldType.Text)
     @NotNull
     @Size(min = 1, max = 500)
     private String description;
@@ -28,6 +35,7 @@ public class Product {
     @NotNull
     private int stock;
 
+    @Field(type = FieldType.Text)
     @NotNull
     @Size(min = 1, max = 100)
     private String category;

@@ -20,6 +20,32 @@ h2 {
     color: #333;
 }
 
+.search-bar {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.search-bar input[type="text"] {
+    padding: 10px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;
+}
+
+.search-bar button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+.search-bar button:hover {
+    background-color: #45a049;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -42,41 +68,6 @@ tr:nth-child(even) {
 
 th, td {
     padding: 12px 15px;
-}
-
-.insert-fake {
-    display: block;
-    margin-bottom: 20px;
-    color: #4CAF50;
-    text-decoration: none;
-}
-
-.insert-fake:hover {
-    text-decoration: underline;
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.page-link {
-    margin: 0 5px;
-    padding: 10px 15px;
-    background-color: #4CAF50;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-}
-
-.page-link:hover {
-    background-color: #45a049;
-}
-
-.disabled-link {
-    pointer-events: none;
-    background-color: #ccc;
 }
 
 .cart-button {
@@ -208,16 +199,4 @@ th, td {
 /* Show Cart button styles */
 .show-cart-button {
     position: absolute;
-    top: 20px;
-    right: 150px;
-    padding: 10px 20px;
-    background-color: #FF5722;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.show-cart-button:hover {
-    background-color: #E64A19;
-}
+    top: 
