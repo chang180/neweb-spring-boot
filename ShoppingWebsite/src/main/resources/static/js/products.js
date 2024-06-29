@@ -1,13 +1,11 @@
 let memberId;
-let userEmail;
 
 // Fetch current user information on page load
 fetch('/member/currentUser')
     .then(response => response.json())
     .then(data => {
-        memberId = data.id; // 假設後端返回的數據格式包含用戶ID
-        userEmail = data.email; // 假設後端返回的數據格式包含用戶email
-        console.log(`Current member ID: ${memberId}, email: ${userEmail}`);
+        memberId = data.id; // 假设后端返回的数据格式包含用户ID
+        console.log(`Current member ID: ${memberId}`);
         updateCartModal();
     })
     .catch(error => {
@@ -149,7 +147,11 @@ function showCart() {
 // Update cart modal content
 function updateCartModal() {
     console.log('Updating cart modal');
-    fetch(`/cart/view?memberId=${memberId}`, {
+    if (!memberId) {
+        console.error('Member ID is not defined.');
+        return;
+    }
+    fetch(`/cart/view?memberId=${memberId}`, { 
         headers: {
             'Accept': 'application/json'
         }
@@ -158,17 +160,13 @@ function updateCartModal() {
     .then(cartItems => {
         console.log('Cart items:', cartItems);
         const cartItemsContainer = document.getElementById('cartItems');
+        if (!cartItemsContainer) {
+            console.error('Cart items container not found.');
+            return;
+        }
         cartItemsContainer.innerHTML = '';
         let total = 0;
-
-        if (cartItems.length === 0) {
-            // 如果購物車為空，顯示一條消息或隱藏購物車內容
-            cartItemsContainer.innerHTML = `
-                <tr>
-                    <td colspan="4" style="text-align: center;">Your cart is empty.</td>
-                </tr>
-            `;
-        } else {
+        if (cartItems && Array.isArray(cartItems)) {
             cartItems.forEach(item => {
                 if (item.price !== undefined && item.quantity !== undefined) {
                     const subtotal = item.price * item.quantity;
@@ -185,15 +183,15 @@ function updateCartModal() {
                     console.error('Error: item properties are undefined', item);
                 }
             });
+        } else {
+            cartItemsContainer.innerHTML = '<tr><td colspan="4">Your cart is empty.</td></tr>';
         }
-
         document.getElementById('cartTotal').textContent = total;
     }).catch(error => {
         console.error('Error fetching cart items:', error);
-        // 不顯示彈窗，只在控制台顯示錯誤信息
+        alert('Failed to load cart items.');
     });
 }
-
 
 // Clear cart
 document.getElementById('clearCartButton').addEventListener('click', () => {
@@ -216,7 +214,12 @@ document.getElementById('clearCartButton').addEventListener('click', () => {
 
 // Checkout button
 document.getElementById("checkoutButton").addEventListener("click", function() {
-    fetch(`/orders/checkout?memberId=${memberId}&email=${userEmail}`, {
+    // Ensure memberId is defined before making the request
+    if (!memberId) {
+        console.error('Member ID is not defined.');
+        return;
+    }
+    fetch(`/orders/checkout?memberId=${memberId}`, {
         method: "POST"
     }).then(response => {
         if (response.ok) {
@@ -224,8 +227,10 @@ document.getElementById("checkoutButton").addEventListener("click", function() {
         } else {
             throw new Error("Checkout failed");
         }
-    }).then(url => {
-        window.location.href = url; // 跳轉到訂單詳細頁面
+    }).then(message => {
+        alert(message);
+        // 清空購物車UI
+        // 你的清空購物車UI的代码
     }).catch(error => {
         alert(error.message);
     });
@@ -248,9 +253,6 @@ function cancelOrder(orderId) {
         }
     });
 }
-
-// Initialize cart modal
-updateCartModal();
 
 // Ensure that goToOrders and cancelOrder are set after DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
